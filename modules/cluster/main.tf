@@ -20,6 +20,9 @@ resource "kind_cluster" "default" {
         nodeRegistration:
           kubeletExtraArgs:
             node-labels: "ingress-ready=true"
+        networking:
+          apiServerAddress: ${var.domain}
+          apiServerPort: 6445
         YAML 
       ]
 

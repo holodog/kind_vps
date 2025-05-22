@@ -1,6 +1,5 @@
 variable "domain" {
-  type    = string
-  default = "pbarysiuk.onedumb.com"
+  type = string
 }
 
 variable "cluster_name" {
