@@ -17,10 +17,10 @@ resource "kind_cluster" "default" {
 
       kubeadm_config_patches = [<<-YAML
         kind: InitConfiguration
-          nodeRegistration:
-            kubeletExtraArgs:
-              node-labels: "ingress-ready=true"
-      YAML
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+        YAML 
       ]
 
       extra_port_mappings {
