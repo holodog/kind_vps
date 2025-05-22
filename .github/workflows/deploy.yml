@@ -29,8 +29,12 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Decode terraform.tfvars from secret
+        run: |
+          echo "${{ secrets.TFVARS_B64 }}" | base64 --decode > terraform.tfvars
+      
       - name: Plan
-        run: terraform init && terraform plan --no-color -out=tfplan.out && terraform show -json tfplan.out > tfplan.json
+        run: terraform init && terraform plan -no-color -out=tfplan.out && terraform show -json tfplan.out > tfplan.json
 
       - name: Cat plan
         run: cat tfplan.json
