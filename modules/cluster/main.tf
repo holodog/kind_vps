@@ -11,6 +11,10 @@ resource "kind_cluster" "default" {
   kind_config {
     kind        = "Cluster"
     api_version = "kind.x-k8s.io/v1alpha4"
+    networking {
+      api_server_address = var.domain
+      api_server_port = "6445"
+    }
 
     node {
       role = "control-plane"
@@ -20,9 +24,6 @@ resource "kind_cluster" "default" {
         nodeRegistration:
           kubeletExtraArgs:
             node-labels: "ingress-ready=true"
-        networking:
-          apiServerAddress: ${var.domain}
-          apiServerPort: 6445
         YAML 
       ]
 
