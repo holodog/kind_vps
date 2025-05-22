@@ -3,7 +3,7 @@ locals {
 }
 
 resource "kind_cluster" "default" {
-  name            = "var.cluster_name"
+  name            = var.cluster_name
   wait_for_ready  = true
   kubeconfig_path = local.k8s_config_path
   node_image      = "kindest/node:${var.k8s_version}"
