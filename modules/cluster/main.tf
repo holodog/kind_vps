@@ -13,7 +13,6 @@ resource "kind_cluster" "default" {
     api_version = "kind.x-k8s.io/v1alpha4"
     networking {
       api_server_address = var.domain
-      api_server_port = "6445"
     }
 
     node {
