@@ -30,7 +30,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Plan
-        run: terraform init && terraform plan --no-color -out=tfplan.out && terraform show -json tfplan.out > tfplan.json
+        run: terraform init && terraform plan -no-color -out=tfplan.out && terraform show -json tfplan.out > tfplan.json
 
       - name: Cat plan
         run: cat tfplan.json
