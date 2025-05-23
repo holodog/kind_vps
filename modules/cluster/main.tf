@@ -11,19 +11,30 @@ resource "kind_cluster" "default" {
   kind_config {
     kind        = "Cluster"
     api_version = "kind.x-k8s.io/v1alpha4"
+
     networking {
-      api_server_address = var.domain
+      api_server_address = "0.0.0.0"
     }
 
     node {
       role = "control-plane"
 
-      kubeadm_config_patches = [<<-YAML
-        kind: InitConfiguration
-        nodeRegistration:
-          kubeletExtraArgs:
-            node-labels: "ingress-ready=true"
-        YAML 
+      kubeadm_config_patches = [
+        <<-YAML
+          kind: InitConfiguration
+          nodeRegistration:
+            kubeletExtraArgs:
+              node-labels: "ingress-ready=true"
+        YAML,
+        <<-YAML
+          apiVersion: kubeadm.k8s.io/v1beta3
+          kind: ClusterConfiguration
+          apiServer:
+            certSANs:
+              - "${var.domain}"
+              - "localhost"
+              - "127.0.0.1"
+        YAML
       ]
 
       extra_port_mappings {
@@ -34,8 +45,15 @@ resource "kind_cluster" "default" {
         container_port = 443
         host_port      = 30443
       }
+      extra_port_mappings {
+        container_port = 6443
+        host_port      = 37903
+      }
     }
 
+    node {
+      role = "worker"
+    }
     node {
       role = "worker"
     }
