@@ -13,7 +13,9 @@ resource "kind_cluster" "default" {
     api_version = "kind.x-k8s.io/v1alpha4"
 
     networking {
-      api_server_address = "0.0.0.0"
+      api_server_address  = "0.0.0.0"
+      disable_default_cni = var.pod_subnet != ""
+      pod_subnet          = var.pod_subnet
     }
 
     node {

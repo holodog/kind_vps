@@ -8,3 +8,8 @@ variable "cluster_name" {
 variable "k8s_version" {
   type = string
 }
+
+variable "pod_subnet" {
+  type    = string
+  default = ""
+}
