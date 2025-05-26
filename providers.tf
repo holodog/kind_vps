@@ -28,26 +28,26 @@ terraform {
 }
 
 provider "kubernetes" {
-  client_certificate     = module.cluster.creds.client_certificate
-  host                   = module.cluster.creds.host
-  client_key             = module.cluster.creds.client_key
-  cluster_ca_certificate = module.cluster.creds.cluster_ca_certificate
+  client_certificate     = module.cluster.client_certificate
+  host                   = module.cluster.endpoint
+  client_key             = module.cluster.client_key
+  cluster_ca_certificate = module.cluster.cluster_ca_certificate
 }
 
 provider "kubectl" {
   alias                  = "kubectl"
-  client_certificate     = module.cluster.creds.client_certificate
-  host                   = module.cluster.creds.host
-  client_key             = module.cluster.creds.client_key
-  cluster_ca_certificate = module.cluster.creds.cluster_ca_certificate
+  client_certificate     = module.cluster.client_certificate
+  host                   = module.cluster.endpoint
+  client_key             = module.cluster.client_key
+  cluster_ca_certificate = module.cluster.cluster_ca_certificate
   load_config_file       = false
 }
 
 provider "helm" {
   kubernetes {
-    client_certificate     = module.cluster.creds.client_certificate
-    host                   = module.cluster.creds.host
-    client_key             = module.cluster.creds.client_key
-    cluster_ca_certificate = module.cluster.creds.cluster_ca_certificate
+    client_certificate     = module.cluster.client_certificate
+    host                   = module.cluster.endpoint
+    client_key             = module.cluster.client_key
+    cluster_ca_certificate = module.cluster.cluster_ca_certificate
   }
 }

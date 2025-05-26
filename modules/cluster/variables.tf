@@ -13,3 +13,7 @@ variable "pod_subnet" {
   type    = string
   default = ""
 }
+
+variable "calico_ver" {
+  type = string
+}

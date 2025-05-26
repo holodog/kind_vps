@@ -49,3 +49,15 @@ resource "kind_cluster" "default" {
     }
   }
 }
+
+resource "null_resource" "install_calico" {
+  depends_on = [kind_cluster.default]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v${var.calico_ver}/manifests/operator-crds.yaml
+      kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v${var.calico_ver}/manifests/tigera-operator.yaml
+      kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v${var.calico_ver}/manifests/custom-resources.yaml
+    EOT
+  }
+}
