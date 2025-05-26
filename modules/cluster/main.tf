@@ -22,21 +22,9 @@ resource "kind_cluster" "default" {
       role = "control-plane"
 
       kubeadm_config_patches = [
-        <<-YAML
-          kind: InitConfiguration
-          nodeRegistration:
-            kubeletExtraArgs:
-              node-labels: "ingress-ready=true"
-        YAML,
-        <<-YAML
-          apiVersion: kubeadm.k8s.io/v1beta3
-          kind: ClusterConfiguration
-          apiServer:
-            certSANs:
-              - "${var.domain}"
-              - "localhost"
-              - "127.0.0.1"
-        YAML
+        templatefile("${path.module}/kubeadm_patch.yaml.tpl", {
+          domain = var.domain
+        })
       ]
 
       extra_port_mappings {
@@ -49,7 +37,7 @@ resource "kind_cluster" "default" {
       }
       extra_port_mappings {
         container_port = 6443
-        host_port      = 37903
+        host_port      = 30444
       }
     }
 
