@@ -18,3 +18,8 @@ variable "pod_subnet" {
 variable "calico_ver" {
   type = string
 }
+
+variable "cluster_config" {
+  description = "Cluster config as a key-value map"
+  type        = map(string)
+}
