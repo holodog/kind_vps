@@ -17,3 +17,8 @@ output "client_key" {
 output "cluster_ca_certificate" {
   value = kind_cluster.default.cluster_ca_certificate
 }
+
+output "kubeconfig_path" {
+  description = "Path to the kubeconfig file"
+  value       = kind_cluster.default.kubeconfig_path
+}

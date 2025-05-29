@@ -28,26 +28,15 @@ terraform {
 }
 
 provider "kubernetes" {
-  client_certificate     = module.cluster.client_certificate
-  host                   = module.cluster.endpoint
-  client_key             = module.cluster.client_key
-  cluster_ca_certificate = module.cluster.cluster_ca_certificate
+  config_path = module.cluster.kubeconfig_path
 }
 
 provider "kubectl" {
-  alias                  = "kubectl"
-  client_certificate     = module.cluster.client_certificate
-  host                   = module.cluster.endpoint
-  client_key             = module.cluster.client_key
-  cluster_ca_certificate = module.cluster.cluster_ca_certificate
-  load_config_file       = false
+  config_path = module.cluster.kubeconfig_path
 }
 
 provider "helm" {
   kubernetes {
-    client_certificate     = module.cluster.client_certificate
-    host                   = module.cluster.endpoint
-    client_key             = module.cluster.client_key
-    cluster_ca_certificate = module.cluster.cluster_ca_certificate
+    config_path = module.cluster.kubeconfig_path
   }
 }
