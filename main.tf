@@ -7,18 +7,10 @@ module "cluster" {
   calico_ver   = var.calico_ver
 }
 
-data "kubernetes_all_namespaces" "allns" {}
-
-resource "kubernetes_config_map" "cluster_config" {
-  for_each = {
-    for ns in data.kubernetes_all_namespaces.allns.namespaces :
-    ns => ns
-  }
+resource "kubernetes_namespace_v1" "default" {
+  for_each = toset(var.namespaces)
 
   metadata {
-    name      = "cluster-config"
-    namespace = each.key
+    name = each.value
   }
-
-  data = var.cluster_config
 }

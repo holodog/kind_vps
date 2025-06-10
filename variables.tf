@@ -23,3 +23,9 @@ variable "cluster_config" {
   description = "Cluster config as a key-value map"
   type        = map(string)
 }
+
+variable "namespaces" {
+  description = "Namespaces to be spinned up by default"
+  type = list(string)
+  default = ["monitoring", "ingress"]
+}
