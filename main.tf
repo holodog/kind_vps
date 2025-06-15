@@ -13,4 +13,39 @@ resource "kubernetes_namespace_v1" "default" {
   metadata {
     name = each.value
   }
+  lifecycle {
+    ignore_changes = [
+      metadata[0].annotations,
+      metadata[0].labels,
+    ]
+  }
+}
+
+resource "flux_bootstrap_git" "this" {
+  depends_on = [module.cluster]
+
+  embedded_manifests = true
+  path               = "clusters/kind_ovh"
+}
+
+locals {
+  target_namespaces = toset(concat(
+    var.namespaces,
+    ["kube-system", "flux-system"]
+  ))
+}
+
+resource "kubernetes_config_map_v1" "cluster_config" {
+  for_each = local.target_namespaces
+  metadata {
+    name      = "cluster-config"
+    namespace = each.value
+  }
+  data = var.cluster_config
+}
+
+resource "github_actions_secret" "cluster_config" {
+  repository      = var.github_kind_repository
+  secret_name     = "CLUSTER_CONFIG"
+  plaintext_value = jsonencode(var.cluster_config)
 }
