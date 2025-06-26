@@ -13,19 +13,19 @@ resource "kubernetes_service_account_v1" "configmap_sync" {
   }
 }
 
-resource "kubernetes_cluster_role_v1" "configmap_manager" {
+resource "kubernetes_cluster_role_v1" "cluster_config_writer" {
   metadata {
     name = "cluster-config-writer"
   }
 
   rule {
     api_groups = [""]
-    resources  = ["namespaces", "configmaps"]
-    verbs      = ["get", "list", "create", "update"]
+    resources  = ["configmaps", "namespaces"]
+    verbs      = ["get", "list", "create", "update", "patch"]
   }
 }
 
-resource "kubernetes_cluster_role_binding_v1" "configmap_binding" {
+resource "kubernetes_cluster_role_binding_v1" "cluster_config_writer_binding" {
   metadata {
     name = "cluster-config-writer-binding"
   }
@@ -33,13 +33,13 @@ resource "kubernetes_cluster_role_binding_v1" "configmap_binding" {
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = kubernetes_cluster_role_v1.configmap_manager.metadata[0].name
+    name      = kubernetes_cluster_role_v1.cluster_config_writer.metadata[0].name
   }
 
   subject {
     kind      = "ServiceAccount"
     name      = kubernetes_service_account_v1.configmap_sync.metadata[0].name
-    namespace = kubernetes_service_account_v1.configmap_sync.metadata[0].namespace
+    namespace = "kube-system"
   }
 }
 
