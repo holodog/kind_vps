@@ -21,7 +21,7 @@ resource "kubernetes_cluster_role_v1" "cluster_config_writer" {
   rule {
     api_groups = [""]
     resources  = ["configmaps", "namespaces"]
-    verbs      = ["get", "list", "create", "update", "patch"]
+    verbs      = ["get", "list", "create", "update", "patch", "delete"]
   }
 }
 
@@ -51,6 +51,7 @@ resource "kubernetes_cron_job_v1" "cluster_config_sync" {
 
   spec {
     schedule = "*/15 * * * *"
+
     job_template {
       metadata {
         name = "cluster-config-job"
@@ -69,26 +70,39 @@ resource "kubernetes_cron_job_v1" "cluster_config_sync" {
             restart_policy       = "OnFailure"
 
             container {
-              name    = "sync"
-              image   = "bitnami/kubectl:latest"
+              name  = "sync"
+              image = "bitnami/kubectl:latest"
               command = ["/bin/bash", "-c"]
               args = [<<-EOT
-                hostname=$(kubectl get configmap cluster-config -n kube-system -o jsonpath="{.data.hostname}")
-                gf_ingress=$(kubectl get configmap cluster-config -n kube-system -o jsonpath="{.data.gf_ingress}")
+                set -e
+                echo "Fetching base configmap from kube-system..."
+                kubectl get configmap cluster-config -n kube-system -o yaml > /tmp/base.yaml
+
                 for ns in $(kubectl get ns -o jsonpath="{.items[*].metadata.name}"); do
                   if [[ "$ns" == "kube-system" ]]; then continue; fi
-                  if kubectl get configmap cluster-config -n $ns >/dev/null 2>&1; then
-                    echo "Updating configmap in $ns"
-                    kubectl delete configmap cluster-config -n $ns
-                  fi
-                  echo "Creating configmap in $ns"
-                  kubectl create configmap cluster-config \
-                    --from-literal=hostname=$hostname \
-                    --from-literal=gf_ingress="$gf_ingress" \
-                    -n $ns
+
+                  echo "Syncing configmap to namespace: $ns"
+                  
+                  # sanitize and patch namespace
+                  cat /tmp/base.yaml | \
+                    yq e 'del(.metadata.namespace)' - | \
+                    yq e 'del(.metadata.resourceVersion)' - | \
+                    yq e 'del(.metadata.uid)' - | \
+                    yq e 'del(.metadata.creationTimestamp)' - | \
+                    yq e '.metadata.namespace = strenv(ns)' - > /tmp/cleaned.yaml
+
+                  kubectl -n "$ns" apply -f /tmp/cleaned.yaml
                 done
               EOT
               ]
+              env {
+                name  = "ns"
+                value_from {
+                  field_ref {
+                    field_path = "metadata.namespace"
+                  }
+                }
+              }
             }
           }
         }
