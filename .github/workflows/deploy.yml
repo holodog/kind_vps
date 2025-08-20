@@ -31,10 +31,10 @@ jobs:
 
       - name: Decode terraform.tfvars from secret
         run: |
-          echo '${{ secrets.TFVARS_B64 }}' > terraform.tfvars.json
+          echo "${{ secrets.TFVARS_B64 }}" | base64 -d > terraform.tfvars
       
       - name: Plan
-        run: terraform init && terraform plan -var-file=terraform.tfvars.json -out tfplan
+        run: terraform init && terraform plan -out tfplan
 
       - name: Apply
-        run: terraform apply -var-file=terraform.tfvars.json --auto-approve tfplan
+        run: terraform apply --auto-approve tfplan
