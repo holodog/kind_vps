@@ -34,7 +34,7 @@ jobs:
           echo '${{ secrets.TFVARS_B64 }}' > terraform.tfvars.json
       
       - name: Plan
-        run: terraform init && terraform plan -out tfplan
+        run: terraform init && terraform plan -var-file=terraform.tfvars.json -out tfplan
 
       - name: Apply
-        run: terraform apply --auto-approve tfplan
+        run: terraform apply -var-file=terraform.tfvars.json --auto-approve tfplan
