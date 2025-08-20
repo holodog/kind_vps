@@ -70,8 +70,8 @@ resource "kubernetes_cron_job_v1" "cluster_config_sync" {
             restart_policy       = "OnFailure"
 
             container {
-              name  = "sync"
-              image = "bitnami/kubectl:latest"
+              name    = "sync"
+              image   = "bitnami/kubectl:latest"
               command = ["/bin/bash", "-c"]
               args = [<<-EOT
                 set -e
@@ -96,7 +96,7 @@ resource "kubernetes_cron_job_v1" "cluster_config_sync" {
               EOT
               ]
               env {
-                name  = "ns"
+                name = "ns"
                 value_from {
                   field_ref {
                     field_path = "metadata.namespace"
