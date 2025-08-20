@@ -46,7 +46,7 @@ resource "flux_bootstrap_git" "this" {
 
 resource "github_actions_secret" "cluster_config" {
   repository      = var.github_kind_repository
-  secret_name     = "CLUSTER_CONFIG"
+  secret_name     = "TFVARS_B64"
   plaintext_value = jsonencode(var.cluster_config)
 }
 

@@ -31,7 +31,7 @@ jobs:
 
       - name: Decode terraform.tfvars from secret
         run: |
-          echo "${{ secrets.TFVARS_B64 }}" | base64 --decode > terraform.tfvars
+        echo '${{ secrets.TFVARS_B64 }}' > terraform.tfvars.json
       
       - name: Plan
         run: terraform init && terraform plan -out tfplan
